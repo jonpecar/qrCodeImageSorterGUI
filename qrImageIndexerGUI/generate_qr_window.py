@@ -1,7 +1,11 @@
+from tabnanny import check
 import tkinter as tk
+from tkinter import filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
 from typing import Dict
 import fitz
+from qrImageIndexer.qr_generator import load_lines, unpack_data, generate_qr_code_structure
+from qrImageIndexer.write_pdf_fpf2 import build_pdf_report, FPDF
 
 SAMPLE_TEXT = """Line 1
 \tLine 1 indented
@@ -11,9 +15,9 @@ Line 3
 \tLine 3 indented"""
 
 class PDFViewer(ScrolledText):
-    def show(self, pdf_file):
+    def show(self, pdf_file, stream=None):
         self.delete('1.0', 'end') # clear current content
-        pdf = fitz.open(pdf_file) # open the PDF file
+        pdf = fitz.Document(pdf_file, stream=stream) # open the PDF file
         self.images = []   # for storing the page images
         for page in pdf:
             pix = page.get_pixmap()
@@ -81,11 +85,11 @@ class OptionsFrame(tk.Frame):
             'sliceable' : self.sort_sliceable_chk_var.get(),
             'qr_headings' : self.qr_for_headings_chk_var.get(),
             'repeat_headings' : self.repeat_headings_chk_var.get(),
-            'include_prefix' : self.use_prefix_chk_var.get(),
+            'use_prefix' : self.use_prefix_chk_var.get(),
         }
 
     def get_prefix(self) -> str:
-        return self.prefix_input.get(0, tk.END)
+        return self.prefix_input.get()
     
     def prefix_toggle(self):
         if not self.use_prefix_chk_var.get():
@@ -117,8 +121,8 @@ class GenerateQRWindow(tk.Toplevel):
         self.right_frame = tk.Frame(self)
         self.right_frame.pack(fill='both', expand=True, side='right')
 
-        self.chk_box_frame = OptionsFrame(self.left_frame)
-        self.chk_box_frame.pack(fill='both', side='top')
+        self.opt_frame = OptionsFrame(self.left_frame)
+        self.opt_frame.pack(fill='both', side='top')
 
         self.enter_txt = ScrolledText(self.left_frame)
         self.enter_txt.insert("1.0", chars=SAMPLE_TEXT)
@@ -128,11 +132,30 @@ class GenerateQRWindow(tk.Toplevel):
         self.doc_viewer.pack(fill='both', expand=True, side='top')
         self.doc_viewer.show('test.pdf')
 
-    def save_pdf(self):
-        print('save button')
+        self.update_pdf_sample() #Update the PDF here so that it will contain the sample text and use all the default settings
 
-    def text_changed(self):
-        print('text changed')
+    def save_pdf(self):
+        file = filedialog.asksaveasfile(mode='wb', confirmoverwrite=True, defaultextension='.pdf',
+                                        filetypes=[['PDF Files', '*.pdf']])
+        pdf = self.generate_pdf()
+        pdf.output(file)
+        file.close()
+        messagebox.showinfo("File Saved", "File successfully saved.")
 
     def update_pdf_sample(self):
-        print('updated sample view')
+        self.doc_viewer.show(None, self.generate_pdf().output())
+
+    def generate_pdf(self) -> FPDF:
+        check_states = self.opt_frame.get_check_states()
+        text = self.enter_txt.get("1.0", tk.END)
+        text = text.split('\n')
+        data = load_lines(text)
+        prefix = ''
+        if check_states['use_prefix']:
+            prefix = self.opt_frame.get_prefix()
+        unpacked = {}
+        unpack_data(data, check_states['qr_headings'], unpacked,
+                    prefix)
+        image_struct = generate_qr_code_structure(unpacked)
+        return build_pdf_report(image_struct, check_states['repeat_headings'],
+                                check_states['sliceable'])
