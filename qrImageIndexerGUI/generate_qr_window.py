@@ -131,7 +131,6 @@ class GenerateQRWindow(tk.Toplevel):
 
         self.doc_viewer = PDFViewer(self.right_frame)
         self.doc_viewer.pack(fill='both', expand=True, side='top')
-        self.doc_viewer.show('test.pdf')
 
         self.update_pdf_sample() #Update the PDF here so that it will contain the sample text and use all the default settings
 

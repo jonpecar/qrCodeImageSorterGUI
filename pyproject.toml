@@ -20,7 +20,7 @@ dependencies = [
         "qrImageIndexer>=0.7.1",
         "PyMuPDF"
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.7"
 [project.optional-dependencies]
 dev = ["pytest", "bumpver", "setuptools", "pytest-mock"]
 
