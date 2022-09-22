@@ -42,7 +42,7 @@ class OptionsFrame(tk.Frame):
                                         variable=self.sort_sliceable_chk_var, onvalue=True,
                                         offvalue=False)
 
-        self.sort_sliceable_chk.pack(side='top', fill='both')
+        self.sort_sliceable_chk.pack(side=tk.TOP, fill=tk.BOTH)
 
         self.qr_for_headings_chk_var = tk.BooleanVar()
         self.qr_for_headings_chk_var.set(True)
@@ -50,7 +50,7 @@ class OptionsFrame(tk.Frame):
                                         variable=self.qr_for_headings_chk_var, onvalue=True,
                                         offvalue=False)
 
-        self.qr_for_headings_chk.pack(side='top', fill='both')
+        self.qr_for_headings_chk.pack(side=tk.TOP, fill=tk.BOTH)
 
         self.repeat_headings_chk_var = tk.BooleanVar()
         self.repeat_headings_chk_var.set(True)
@@ -58,7 +58,7 @@ class OptionsFrame(tk.Frame):
                                         variable=self.repeat_headings_chk_var, onvalue=True,
                                         offvalue=False)
 
-        self.repeat_headings_chk.pack(side='top', fill='both')
+        self.repeat_headings_chk.pack(side=tk.TOP, fill=tk.BOTH)
 
         self.use_prefix_chk_var = tk.BooleanVar()
         self.use_prefix_chk_var.set(True)
@@ -66,17 +66,17 @@ class OptionsFrame(tk.Frame):
                                         variable=self.use_prefix_chk_var, onvalue=True,
                                         offvalue=False, command=self.prefix_toggle)
 
-        self.use_prefix_chk.pack(side='top', fill='both')
+        self.use_prefix_chk.pack(side=tk.TOP, fill=tk.BOTH)
 
         self.prefix_frame = tk.Frame(self)
-        self.prefix_frame.pack(side='top', fill='both')
+        self.prefix_frame.pack(side=tk.TOP, fill=tk.BOTH)
 
         self.prefix_label = tk.Label(self.prefix_frame, text="Prefix:")
-        self.prefix_label.pack(side='left', fill='both')
+        self.prefix_label.pack(side=tk.LEFT, fill=tk.BOTH)
 
         self.prefix_input = tk.Entry(self.prefix_frame)
         self.prefix_input.insert(0, r"{image}")
-        self.prefix_input.pack(side='right', fill='both', expand=True)
+        self.prefix_input.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
 
 
@@ -96,7 +96,7 @@ class OptionsFrame(tk.Frame):
         if not self.use_prefix_chk_var.get():
             self.prefix_frame.pack_forget()
         else:
-            self.prefix_frame.pack(side='top', fill='both')
+            self.prefix_frame.pack(side=tk.TOP, fill=tk.BOTH)
 
 
 
@@ -108,29 +108,29 @@ class GenerateQRWindow(tk.Toplevel):
         self.title("Generate QR Codes")
 
         self.top_frame = tk.Frame(self)
-        self.top_frame.pack(fill='x', side='top')
+        self.top_frame.pack(fill='x', side=tk.TOP)
 
         self.save_button = tk.Button(self.top_frame, text='Save PDF to File', command=self.save_pdf)
-        self.save_button.pack(fill='x', side='left', expand=True)
+        self.save_button.pack(fill='x', side=tk.LEFT, expand=True)
 
         self.generate_sample_button = tk.Button(self.top_frame, text='Update PDF Sample', command=self.update_pdf_sample)
-        self.generate_sample_button.pack(fill='x', side='right', expand=True)
+        self.generate_sample_button.pack(fill='x', side=tk.RIGHT, expand=True)
 
         self.left_frame = tk.Frame(self)
-        self.left_frame.pack(fill='both', expand=True, side='left')
+        self.left_frame.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
 
         self.right_frame = tk.Frame(self)
-        self.right_frame.pack(fill='both', expand=True, side='right')
+        self.right_frame.pack(fill=tk.BOTH, expand=True, side=tk.RIGHT)
 
         self.opt_frame = OptionsFrame(self.left_frame)
-        self.opt_frame.pack(fill='both', side='top')
+        self.opt_frame.pack(fill=tk.BOTH, side=tk.TOP)
 
         self.enter_txt = ScrolledText(self.left_frame)
         self.enter_txt.insert("1.0", chars=SAMPLE_TEXT)
-        self.enter_txt.pack(fill='both', expand=True, side='bottom')
+        self.enter_txt.pack(fill=tk.BOTH, expand=True, side='bottom')
 
         self.doc_viewer = PDFViewer(self.right_frame)
-        self.doc_viewer.pack(fill='both', expand=True, side='top')
+        self.doc_viewer.pack(fill=tk.BOTH, expand=True, side=tk.TOP)
 
         self.update_pdf_sample() #Update the PDF here so that it will contain the sample text and use all the default settings
 
