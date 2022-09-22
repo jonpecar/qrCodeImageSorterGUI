@@ -17,7 +17,7 @@ Line 3
 
 class PDFViewer(ScrolledText):
     def show(self, pdf_file, stream=None):
-        self.delete('1.0', 'end') # clear current content
+        self.delete('1.0', tk.END) # clear current content
         pdf = fitz.Document(pdf_file, stream=stream) # open the PDF file
         self.images = []   # for storing the page images
         for page in pdf:
@@ -25,8 +25,8 @@ class PDFViewer(ScrolledText):
             pix1 = fitz.Pixmap(pix, 0) if pix.alpha else pix
             photo = tk.PhotoImage(data=pix1.tobytes('ppm'))
             # insert into the text box
-            self.image_create('end', image=photo)
-            self.insert('end', '\n')
+            self.image_create(tk.END, image=photo)
+            self.insert(tk.END, '\n')
             # save the image to avoid garbage collected
             self.images.append(photo)
 
