@@ -4,8 +4,8 @@ from tkinter import filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
 from typing import Dict
 import fitz
-from qrImageIndexer.qr_generator import load_lines, unpack_data, generate_qr_code_structure
-from qrImageIndexer.write_pdf_fpf2 import build_pdf_report, FPDF
+from qrImageIndexer.qr_generator import load_lines
+from qrImageIndexer.write_pdf_fpf2 import FPDF
 from qrImageIndexer.generate_qr_wrapper import generate_qr_pdf
 
 SAMPLE_TEXT = """Line 1
