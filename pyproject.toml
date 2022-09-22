@@ -18,7 +18,8 @@ classifiers = [
 keywords = ["sorter", "qrcode", "photosorter"]
 dependencies = [
         "qrImageIndexer>=0.7.1",
-        "PyMuPDF"
+        "PyMuPDF",
+        "pillow"
 ]
 requires-python = ">=3.7"
 [project.optional-dependencies]
