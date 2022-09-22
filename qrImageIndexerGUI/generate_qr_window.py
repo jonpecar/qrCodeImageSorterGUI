@@ -6,6 +6,7 @@ from typing import Dict
 import fitz
 from qrImageIndexer.qr_generator import load_lines, unpack_data, generate_qr_code_structure
 from qrImageIndexer.write_pdf_fpf2 import build_pdf_report, FPDF
+from qrImageIndexer.generate_qr_wrapper import generate_qr_pdf
 
 SAMPLE_TEXT = """Line 1
 \tLine 1 indented
@@ -153,9 +154,5 @@ class GenerateQRWindow(tk.Toplevel):
         prefix = ''
         if check_states['use_prefix']:
             prefix = self.opt_frame.get_prefix()
-        unpacked = {}
-        unpack_data(data, check_states['qr_headings'], unpacked,
-                    prefix)
-        image_struct = generate_qr_code_structure(unpacked)
-        return build_pdf_report(image_struct, check_states['repeat_headings'],
-                                check_states['sliceable'])
+        return generate_qr_pdf(data, check_states['qr_headings'], check_states['repeat_headings'],
+                                check_states['sliceable'], prefix)
