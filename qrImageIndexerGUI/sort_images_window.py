@@ -1,14 +1,16 @@
 from functools import partial
 from threading import Thread
 import os
+from itertools import repeat
 import tkinter as tk
 from tkinter import filedialog
 from tkinter.ttk import Progressbar
 from PIL import ImageTk, Image
-from typing import Dict, List, Text
+from typing import Dict, List
 import natsort
-from multiprocessing import Pool, cpu_count
 from qrImageIndexer import photo_sorter
+from multiprocessing import Pool, cpu_count
+
 
 DEFAULT_COLUMN_WIDTH = 400
 
