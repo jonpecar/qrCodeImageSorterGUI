@@ -3,3 +3,4 @@ PyMuPDF
 pytest
 pytest-mock
 pillow
+natsort
