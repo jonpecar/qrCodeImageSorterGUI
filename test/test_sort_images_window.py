@@ -182,3 +182,25 @@ def test_image_scan_1_non_image(mocked_image_sort_functions):
     assert thread.non_image_files == ['image3non-image']
 
     is_image.assert_has_calls([call(x) for x in files])
+
+def test_sort_dict_function():
+    input = {
+        'a':123,
+        'b':456,
+        'c':789
+    }
+
+    expect_keys = ['a', 'b', 'c']
+    
+    assert expect_keys == list(sort_images_window.ScanImagesWindow.sort_results_dict(input).keys())
+
+def test_sort_dict_function_unergdered():
+    input = {
+        'a':123,
+        'c':789,
+        'b':456
+    }
+
+    expect_keys = ['a', 'b', 'c']
+    
+    assert expect_keys == list(sort_images_window.ScanImagesWindow.sort_results_dict(input).keys())

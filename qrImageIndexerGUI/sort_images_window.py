@@ -4,6 +4,7 @@ import os
 from itertools import repeat
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 from tkinter.ttk import Progressbar
 from PIL import ImageTk, Image
 from typing import Dict, List
@@ -62,6 +63,7 @@ class ScanImagesWindow(tk.Toplevel):
         self.out_directory = ''
 
         self.non_image_files = []
+        self.scan_results = {}
 
     def scan_button_clicked(self):
         directory = filedialog.askdirectory()
@@ -75,7 +77,15 @@ class ScanImagesWindow(tk.Toplevel):
             self.monitor_progress_image_scan(scan_thread)
 
     def save_button_clicked(self):
-        pass
+        if not os.path.isdir(self.in_directory) or not self.scan_results:
+            messagebox.showerror('No Input Data', 'Did not detect appropriate input date. ' +
+                                'Please make sure that you have scanned an input directory with QR codes.')
+            return
+        directory = filedialog.askdirectory()
+
+        if os.path.isdir(directory):
+            self.out_directory = directory
+            photo_sorter.sort_directory_exisitng_results(self.scan_results, self.in_directory, self.out_directory, False)
 
     def monitor_progress_image_scan(self, thread : ImageScan):
         if thread.is_alive():
@@ -83,10 +93,15 @@ class ScanImagesWindow(tk.Toplevel):
             self.after(100, lambda: self.monitor_progress_image_scan(thread))
         else:
             self.progress['value'] = 0
-            for file in thread.results:
-                self.image_grid.add_image(file, thread.results[file])
+            self.scan_results = ScanImagesWindow.sort_results_dict(thread.results)
+            for file in self.scan_results:
+                self.image_grid.add_image(file, self.scan_results[file])
             self.non_image_files = thread.non_image_files[:]
             self.image_grid.rebuild_grid()
+
+    def sort_results_dict(dict : Dict[str, str]) -> Dict[str, str]:
+        sorted_keys = natsort.natsorted(dict.keys())
+        return {key:dict[key] for key in sorted_keys}
 
 class ScanOptionsFrame(tk.Frame):
     def __init__(self, parent, *args, **kwargs):

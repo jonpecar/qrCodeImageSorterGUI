@@ -1,4 +1,4 @@
-qrImageIndexer >= 0.7.1
+qrImageIndexer >= 0.7.2
 PyMuPDF
 pytest
 pytest-mock
