@@ -1,4 +1,3 @@
-from cmath import exp
 import tkinter as tk
 from qrImageIndexerGUI import generate_qr_window
 from qrImageIndexerGUI.sort_images_window import ScanImagesWindow

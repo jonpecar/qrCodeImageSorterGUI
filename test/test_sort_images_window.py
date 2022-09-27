@@ -1,4 +1,3 @@
-from msilib.schema import Patch
 from qrImageIndexerGUI import sort_images_window
 import pytest
 import tkinter as tk

@@ -1,8 +1,8 @@
-from tabnanny import check
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
 from typing import Dict
+
 import fitz
 from qrImageIndexer.qr_generator import load_lines
 from qrImageIndexer.write_pdf_fpf2 import FPDF

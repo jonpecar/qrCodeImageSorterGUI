@@ -1,7 +1,6 @@
 from functools import partial
 from threading import Thread
 import os
-from itertools import repeat
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
