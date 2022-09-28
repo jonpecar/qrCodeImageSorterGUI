@@ -42,6 +42,8 @@ class ImageScan(Thread):
 class ScanImagesWindow(tk.Toplevel):
     def __init__(self, master, *args, **kwargs):
         tk.Toplevel.__init__(self, master, *args, **kwargs)
+        self.geometry("1200x800")
+        self.title("Sort Images by QR Codes")
         self.button_frame = tk.Frame(self)
         self.scan_opts = ScanOptionsFrame(self)
         self.image_grid = ImageGrid(self)
