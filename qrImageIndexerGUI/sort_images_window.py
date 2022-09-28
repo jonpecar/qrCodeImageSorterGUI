@@ -39,6 +39,15 @@ class ImageScan(Thread):
                 if qr_string:
                     self.results[image_path] = qr_string
 
+class ImageCopy(Thread):
+    def __init__(self, scan_results : Dict[str, str], in_directory : str, out_directory : str):
+        self.scan_results = scan_results
+        self.in_directory = in_directory
+        self.out_directory = out_directory
+
+    def run(self):
+        photo_sorter.sort_directory_exisitng_results(self.scan_results, self.in_directory, self.out_directory, False)
+
 class ScanImagesWindow(tk.Toplevel):
     def __init__(self, master, *args, **kwargs):
         tk.Toplevel.__init__(self, master, *args, **kwargs)
@@ -86,19 +95,47 @@ class ScanImagesWindow(tk.Toplevel):
 
         if os.path.isdir(directory):
             self.out_directory = directory
-            photo_sorter.sort_directory_exisitng_results(self.scan_results, self.in_directory, self.out_directory, False)
+            save_thread = ImageCopy(self.scan_results, self.in_directory, self.out_directory)
+            save_thread.start()
+            self.monitor_progress_image_save(save_thread)
+
+    def disable_buttons(self):
+        """
+            Disable buttons while processes running to avoid clash
+        """
+        self.save_sorted_images_button['state'] = tk.DISABLED
+        self.scan_dir_button['state'] = tk.DISABLED
+
+    def enable_buttons(self):
+        """
+            Enable buttons when processes done
+        """
+        self.save_sorted_images_button['state'] = tk.NORMAL
+        self.scan_dir_button['state'] = tk.NORMAL
 
     def monitor_progress_image_scan(self, thread : ImageScan):
         if thread.is_alive():
+            self.disable_buttons()
             self.progress['value'] = thread.percent
             self.after(100, lambda: self.monitor_progress_image_scan(thread))
         else:
+            self.enable_buttons()
             self.progress['value'] = 0
             self.scan_results = ScanImagesWindow.sort_results_dict(thread.results)
             for file in self.scan_results:
                 self.image_grid.add_image(file, self.scan_results[file])
             self.non_image_files = thread.non_image_files[:]
             self.image_grid.rebuild_grid()
+
+    def monitor_progress_image_save(self, thread : ImageCopy):
+        if thread.is_alive():
+            self.disable_buttons()
+            self.progress.configure(mode='indeterminate')
+            self.after(100, lambda: self.monitor_progress_image_scan(thread))
+        else:
+            self.enable_buttons()
+            self.progress.configure(mode='determinate')
+            self.progress['value'] = 0
 
     def sort_results_dict(dict : Dict[str, str]) -> Dict[str, str]:
         sorted_keys = natsort.natsorted(dict.keys())
@@ -222,7 +259,8 @@ class ImageGrid(tk.Frame):
         return result
 
     def add_image(self, image_path : str, qr_value : str) -> None:
-        pass
+        image = KeyImagePresent(image_path, qr_value, self.frame)
+        self.images[image_path] = image
 
 class KeyImagePresent(tk.Frame):
     
