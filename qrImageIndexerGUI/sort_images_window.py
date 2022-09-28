@@ -41,6 +41,7 @@ class ImageScan(Thread):
 
 class ImageCopy(Thread):
     def __init__(self, scan_results : Dict[str, str], in_directory : str, out_directory : str):
+        Thread.__init__(self)
         self.scan_results = scan_results
         self.in_directory = in_directory
         self.out_directory = out_directory
@@ -131,11 +132,12 @@ class ScanImagesWindow(tk.Toplevel):
         if thread.is_alive():
             self.disable_buttons()
             self.progress.configure(mode='indeterminate')
-            self.after(100, lambda: self.monitor_progress_image_scan(thread))
+            self.after(100, lambda: self.monitor_progress_image_save(thread))
         else:
             self.enable_buttons()
             self.progress.configure(mode='determinate')
             self.progress['value'] = 0
+            messagebox.showinfo('Copy Complete', 'Copying images to output directory is complete.')
 
     def sort_results_dict(dict : Dict[str, str]) -> Dict[str, str]:
         sorted_keys = natsort.natsorted(dict.keys())
