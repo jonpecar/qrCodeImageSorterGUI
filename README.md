@@ -20,6 +20,7 @@ To load the launch window, run the command:
 ```python -m qrImageIndexerGUI```
 
 This will present the user with the following window:
+
 ![LaunchWindow](https://user-images.githubusercontent.com/65805625/192664386-c3fbaa5d-0c27-4b17-a002-9fda23ee2b8c.png)
 
 From here you can open either the window for generating the QR codes or for sorting the resultant images.
@@ -57,9 +58,19 @@ The available controls are listed below:
 4. Indicate whether QR codes have a prefix attached;
 5. Specify QR code prefix if used;
 6. Display images where QR codes are detected;
-  6.1. Path to specified image;
-  6.2. Thumbnail of image;
-  6.3. Path detected in QR code.
+
+    6.1. Path to specified image;
+    
+    6.2. Thumbnail of image;
+    
+    6.3. Path detected in QR code.
+
+#### Note on future feature
+
+It is intended that a feature will be added to allow users to manually add images as key images where they are not detected with a QR code. 
+This will allow users to images where the QR code may not have been detected or where it was forgotten. That is the primary purpose of the
+intermediate preview window but this feature is not implemented yet.
+
 ## Note around build tests:
 ---
 
