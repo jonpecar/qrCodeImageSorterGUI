@@ -3,7 +3,6 @@ GUI interface for the [qrCodeImageSorter](https://github.com/jonpecar/qrCodeImag
 of the tool see the readme in this repository. This is a GUI interface for this underlying toolset.
 
 ## Installation
----
 
 To install the tool, run the below command with any version of Python above 3.7:
 
@@ -46,6 +45,7 @@ The recommended settings are set by default. In most situations the user should 
 text entry field (8).
 
 ### Sort Images
+---
 
 This window allows the user to sort photos that have been taken with QR codes in them. The interface will look similar to the below. 
 Note that the provided screenshot is shown after having scanned a folder of images for demonstration. It will be blank prior to this:
@@ -66,6 +66,7 @@ The available controls are listed below:
     6.3. Path detected in QR code.
 
 #### Note on future feature
+---
 
 It is intended that a feature will be added to allow users to manually add images as key images where they are not detected with a QR code. 
 This will allow users to images where the QR code may not have been detected or where it was forgotten. That is the primary purpose of the
