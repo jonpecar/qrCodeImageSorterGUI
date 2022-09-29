@@ -2,6 +2,10 @@
 GUI interface for the [qrCodeImageSorter](https://github.com/jonpecar/qrCodeImageSorter) repository. For detailed information on the philosophy 
 of the tool see the readme in this repository. This is a GUI interface for this underlying toolset.
 
+## A Quick (but rough) Video Guide
+
+https://user-images.githubusercontent.com/65805625/192924326-2560853a-2418-4b95-8806-40d787ae489c.mp4
+
 ## Installation
 
 To install the tool, run the below command with any version of Python above 3.7:
