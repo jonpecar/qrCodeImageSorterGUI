@@ -20,7 +20,8 @@ dependencies = [
         "qrImageIndexer>=0.7.3",
         "PyMuPDF",
         "pillow",
-        "natsort"
+        "natsort",
+        "customtkinter"
 ]
 requires-python = ">=3.7"
 [project.optional-dependencies]
@@ -41,7 +42,7 @@ push = true
     'current_version = "{version}"',
     'version = "{version}"',
 ]
-'qrImageIndexerGUI/__init__.py' = [
+'qrImageIndexerGUI\\__init__.py' = [
     '__version__ = "{version}"',
 ]
 
