@@ -1,9 +1,11 @@
 from qrImageIndexerGUI import launch_window
-import tkinter as tk
+import customtkinter as ctk
 
 def main():
     print("launched")
-    app = tk.Tk(className="qrImageIndexerGUI")
+    ctk.set_appearance_mode("System")
+    ctk.set_default_color_theme("blue")
+    app = ctk.CTk(className="qrImageIndexerGUI")
     launch_window.LaunchWindow(app)
     app.title('QR Image Indexer GUI')
     app.geometry("300x75")
