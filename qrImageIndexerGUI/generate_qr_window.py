@@ -1,3 +1,5 @@
+import customtkinter as ctk
+
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
@@ -7,6 +9,10 @@ import fitz
 from qrImageIndexer.qr_generator import load_lines
 from qrImageIndexer.write_pdf_fpf2 import FPDF
 from qrImageIndexer.generate_qr_wrapper import generate_qr_pdf
+
+from qrImageIndexerGUI.custom_scrolled_text import CustomScrolledText
+
+FRAME_PAD_PX = 10
 
 SAMPLE_TEXT = """Line 1
 \tLine 1 indented
@@ -31,14 +37,14 @@ class PDFViewer(ScrolledText):
             self.images.append(photo)
 
 
-class OptionsFrame(tk.Frame):
+class OptionsFrame(ctk.CTkFrame):
     def __init__(self, parent, *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
+        ctk.CTkFrame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
 
         self.sort_sliceable_chk_var = tk.BooleanVar()
         self.sort_sliceable_chk_var.set(True)
-        self.sort_sliceable_chk = tk.Checkbutton(self, text='Sort PDF to be sliceable (cut through page for ordered slips)', 
+        self.sort_sliceable_chk = ctk.CTkCheckBox(self, text='Sort PDF to be sliceable (cut through page for ordered slips)', 
                                         variable=self.sort_sliceable_chk_var, onvalue=True,
                                         offvalue=False)
 
@@ -46,7 +52,7 @@ class OptionsFrame(tk.Frame):
 
         self.qr_for_headings_chk_var = tk.BooleanVar()
         self.qr_for_headings_chk_var.set(True)
-        self.qr_for_headings_chk = tk.Checkbutton(self, text='Include QR codes for heading all lines (not just last level)', 
+        self.qr_for_headings_chk = ctk.CTkCheckBox(self, text='Include QR codes for heading all lines (not just last level)', 
                                         variable=self.qr_for_headings_chk_var, onvalue=True,
                                         offvalue=False)
 
@@ -54,7 +60,7 @@ class OptionsFrame(tk.Frame):
 
         self.repeat_headings_chk_var = tk.BooleanVar()
         self.repeat_headings_chk_var.set(True)
-        self.repeat_headings_chk = tk.Checkbutton(self, text='Repeat heading text on every line', 
+        self.repeat_headings_chk = ctk.CTkCheckBox(self, text='Repeat heading text on every line', 
                                         variable=self.repeat_headings_chk_var, onvalue=True,
                                         offvalue=False)
 
@@ -62,19 +68,19 @@ class OptionsFrame(tk.Frame):
 
         self.use_prefix_chk_var = tk.BooleanVar()
         self.use_prefix_chk_var.set(True)
-        self.use_prefix_chk = tk.Checkbutton(self, text='Include prefix in QR code text', 
+        self.use_prefix_chk = ctk.CTkCheckBox(self, text='Include prefix in QR code text', 
                                         variable=self.use_prefix_chk_var, onvalue=True,
                                         offvalue=False, command=self.prefix_toggle)
 
         self.use_prefix_chk.pack(side=tk.TOP, fill=tk.BOTH)
 
-        self.prefix_frame = tk.Frame(self)
+        self.prefix_frame = ctk.CTkFrame(self)
         self.prefix_frame.pack(side=tk.TOP, fill=tk.BOTH)
 
-        self.prefix_label = tk.Label(self.prefix_frame, text="Prefix:")
+        self.prefix_label = ctk.CTkLabel(self.prefix_frame, text="Prefix:")
         self.prefix_label.pack(side=tk.LEFT, fill=tk.BOTH)
 
-        self.prefix_input = tk.Entry(self.prefix_frame)
+        self.prefix_input = ctk.CTkEntry(self.prefix_frame)
         self.prefix_input.insert(0, r"{image}")
         self.prefix_input.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
@@ -101,25 +107,25 @@ class OptionsFrame(tk.Frame):
 
 
 
-class GenerateQRWindow(tk.Toplevel):
+class GenerateQRWindow(ctk.CTkToplevel):
     def __init__(self, master, *args, **kwargs):
-        tk.Toplevel.__init__(self, master, *args, **kwargs)
+        ctk.CTkToplevel.__init__(self, master, *args, **kwargs)
         self.geometry("1200x800")
         self.title("Generate QR Codes")
 
-        self.top_frame = tk.Frame(self)
+        self.top_frame = ctk.CTkFrame(self)
         self.top_frame.pack(fill='x', side=tk.TOP)
 
-        self.save_button = tk.Button(self.top_frame, text='Save PDF to File', command=self.save_pdf)
+        self.save_button = ctk.CTkButton(self.top_frame, text='Save PDF to File', command=self.save_pdf)
         self.save_button.pack(fill='x', side=tk.LEFT, expand=True)
 
-        self.generate_sample_button = tk.Button(self.top_frame, text='Update PDF Sample', command=self.update_pdf_sample)
+        self.generate_sample_button = ctk.CTkButton(self.top_frame, text='Update PDF Sample', command=self.update_pdf_sample)
         self.generate_sample_button.pack(fill='x', side=tk.RIGHT, expand=True)
 
-        self.left_frame = tk.Frame(self)
+        self.left_frame = ctk.CTkFrame(self)
         self.left_frame.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
 
-        self.right_frame = tk.Frame(self)
+        self.right_frame = ctk.CTkFrame(self)
         self.right_frame.pack(fill=tk.BOTH, expand=True, side=tk.RIGHT)
 
         self.opt_frame = OptionsFrame(self.left_frame)
@@ -127,10 +133,12 @@ class GenerateQRWindow(tk.Toplevel):
 
         self.enter_txt = ScrolledText(self.left_frame)
         self.enter_txt.insert("1.0", chars=SAMPLE_TEXT)
-        self.enter_txt.pack(fill=tk.BOTH, expand=True, side='bottom')
+        self.enter_txt.pack(fill=tk.BOTH, expand=True, side='bottom',
+                            padx=FRAME_PAD_PX, pady=FRAME_PAD_PX)
 
         self.doc_viewer = PDFViewer(self.right_frame)
-        self.doc_viewer.pack(fill=tk.BOTH, expand=True, side=tk.TOP)
+        self.doc_viewer.pack(fill=tk.BOTH, expand=True, side=tk.TOP,
+                            padx=FRAME_PAD_PX, pady=FRAME_PAD_PX)
 
         self.update_pdf_sample() #Update the PDF here so that it will contain the sample text and use all the default settings
 

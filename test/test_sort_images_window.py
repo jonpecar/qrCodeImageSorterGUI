@@ -1,6 +1,7 @@
 from qrImageIndexerGUI import sort_images_window
 import pytest
 import tkinter as tk
+import customtkinter as ctk
 from unittest.mock import MagicMock, call, Mock
 
 def test_gridify_items_multiline():
@@ -51,7 +52,8 @@ def test_get_prefix_unchecked(options_frame : sort_images_window.ScanOptionsFram
     assert '' == options_frame.get_prefix()
 
 def test_sorted_keys_in_order():
-    image_grid = sort_images_window.ImageGrid(None)
+    app = ctk.CTk()
+    image_grid = sort_images_window.ImageGrid(app)
     image_grid.images['a'] = 'TEST A'
     image_grid.images['b'] = 'TEST B'
     image_grid.images['c'] = 'TEST C'
@@ -69,7 +71,8 @@ def test_sorted_keys_in_order():
 
 
 def test_sorted_keys_out_of_order():
-    image_grid = sort_images_window.ImageGrid(None)
+    app = ctk.CTk()
+    image_grid = sort_images_window.ImageGrid(app)
     image_grid.images['a'] = 'TEST A'
     image_grid.images['c'] = 'TEST C'
     image_grid.images['b'] = 'TEST B'
