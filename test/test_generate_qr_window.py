@@ -1,5 +1,6 @@
 import pytest
 import tkinter as tk
+import customtkinter as ctk
 from qrImageIndexerGUI import generate_qr_window
 
 # Testing the behaviour of the checkboxes. Probably not the best practice, but wanted to make sure that
@@ -7,7 +8,7 @@ from qrImageIndexerGUI import generate_qr_window
 
 @pytest.fixture
 def options_frame() -> generate_qr_window.OptionsFrame:
-    app = tk.Tk()
+    app = ctk.CTk()
     frame = generate_qr_window.OptionsFrame(app)
     yield frame
     app.destroy()

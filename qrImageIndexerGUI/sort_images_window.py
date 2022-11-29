@@ -1,13 +1,16 @@
 from functools import partial
 from threading import Thread
 import os
+from typing import Dict, List
+
+import customtkinter as ctk
+from customtkinter import ThemeManager
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
-from tkinter.ttk import Progressbar
 from PIL import ImageTk, Image
-from typing import Dict, List
 import natsort
+
 from qrImageIndexer import photo_sorter
 from multiprocessing import Pool, cpu_count
 
@@ -49,19 +52,20 @@ class ImageCopy(Thread):
     def run(self):
         photo_sorter.sort_directory_exisitng_results(self.scan_results, self.in_directory, self.out_directory, False)
 
-class ScanImagesWindow(tk.Toplevel):
+class ScanImagesWindow(ctk.CTkToplevel):
     def __init__(self, master, *args, **kwargs):
-        tk.Toplevel.__init__(self, master, *args, **kwargs)
+        ctk.CTkToplevel.__init__(self, master, *args, **kwargs)
         self.geometry("1200x800")
         self.title("Sort Images by QR Codes")
-        self.button_frame = tk.Frame(self)
+        self.button_frame = ctk.CTkFrame(self)
         self.scan_opts = ScanOptionsFrame(self)
         self.image_grid = ImageGrid(self)
-        self.scan_dir_button = tk.Button(self.button_frame, text='Scan Images From Directory (Will clear existing results)',
+        self.scan_dir_button = ctk.CTkButton(self.button_frame, text='Scan Images From Directory (Will clear existing results)',
                                         command=self.scan_button_clicked)
-        self.save_sorted_images_button = tk.Button(self.button_frame, text='Save Sorted Images in Directory',
+        self.save_sorted_images_button = ctk.CTkButton(self.button_frame, text='Save Sorted Images in Directory',
                                                 command=self.save_button_clicked)
-        self.progress = Progressbar(self, orient=tk.HORIZONTAL, mode='determinate', length=400)
+        self.progress = ctk.CTkProgressBar(self, orient=tk.HORIZONTAL, mode='determinate')
+        self.progress.set(0)
 
         self.button_frame.pack(side=tk.TOP, fill=tk.X)
         self.progress.pack(side=tk.TOP, fill=tk.X)
@@ -117,11 +121,11 @@ class ScanImagesWindow(tk.Toplevel):
     def monitor_progress_image_scan(self, thread : ImageScan):
         if thread.is_alive():
             self.disable_buttons()
-            self.progress['value'] = thread.percent
+            self.progress.set(float(thread.percent)/100)
             self.after(100, lambda: self.monitor_progress_image_scan(thread))
         else:
             self.enable_buttons()
-            self.progress['value'] = 0
+            self.progress.set(0)
             self.scan_results = ScanImagesWindow.sort_results_dict(thread.results)
             for file in self.scan_results:
                 self.image_grid.add_image(file, self.scan_results[file])
@@ -136,24 +140,24 @@ class ScanImagesWindow(tk.Toplevel):
         else:
             self.enable_buttons()
             self.progress.configure(mode='determinate')
-            self.progress['value'] = 0
+            self.progress.set(0)
             messagebox.showinfo('Copy Complete', 'Copying images to output directory is complete.')
 
     def sort_results_dict(dict : Dict[str, str]) -> Dict[str, str]:
         sorted_keys = natsort.natsorted(dict.keys())
         return {key:dict[key] for key in sorted_keys}
 
-class ScanOptionsFrame(tk.Frame):
+class ScanOptionsFrame(ctk.CTkFrame):
     def __init__(self, parent, *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
+        ctk.CTkFrame.__init__(self, parent, *args, **kwargs)
 
         self.has_prefix_chk_var = tk.BooleanVar()
-        self.has_prefix_chk = tk.Checkbutton(self, text='QR codes have prefix',
+        self.has_prefix_chk = ctk.CTkCheckBox(self, text='QR codes have prefix',
                                             variable=self.has_prefix_chk_var, onvalue=True,
                                             offvalue=False)
-        self.prefix_frame = tk.Frame(self)
-        self.prefix_label = tk.Label(self.prefix_frame, text="Prefix:")
-        self.prefix_input = tk.Entry(self.prefix_frame)
+        self.prefix_frame = ctk.CTkFrame(self)
+        self.prefix_label = ctk.CTkLabel(self.prefix_frame, text="Prefix:")
+        self.prefix_input = ctk.CTkEntry(self.prefix_frame)
         
         self.has_prefix_chk_var.set(True)
         self.has_prefix_chk.pack(side=tk.TOP, fill=tk.BOTH)
@@ -169,15 +173,16 @@ class ScanOptionsFrame(tk.Frame):
             return ''
 
 
-class ImageGrid(tk.Frame):
+class ImageGrid(ctk.CTkFrame):
     def __init__(self, master, column_wdith :int = DEFAULT_COLUMN_WIDTH, *args, **kwargs):
-        tk.Frame.__init__(self, master, *args, **kwargs)
+        ctk.CTkFrame.__init__(self, master, *args, **kwargs)
         self.images : Dict[str, KeyImagePresent] = {}
         self.column_width = column_wdith
 
-        self.vscrollbar = tk.Scrollbar(self)
-        self.scrolled_canvas = tk.Canvas(self, bd=0, highlightthickness=0)
-        self.frame = tk.Frame(self.scrolled_canvas)
+        self.vscrollbar = ctk.CTkScrollbar(self)
+        self.scrolled_canvas = ctk.CTkCanvas(self, bd=0, highlightthickness=0, 
+                                            bg=ThemeManager.single_color(self.fg_color, self.master.appearance_mode))
+        self.frame = ctk.CTkFrame(self.scrolled_canvas)
 
         self.vscrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.scrolled_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -264,10 +269,10 @@ class ImageGrid(tk.Frame):
         image = KeyImagePresent(image_path, qr_value, self.frame)
         self.images[image_path] = image
 
-class KeyImagePresent(tk.Frame):
+class KeyImagePresent(ctk.CTkFrame):
     
     def __init__(self, image_path : str, extracted_path : str, master, *args, **kwargs):
-        tk.Frame.__init__(self, master, *args, **kwargs)
+        ctk.CTkFrame.__init__(self, master, *args, **kwargs)
         self.configure(highlightbackground='lightgrey', highlightthickness=1)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=0)
@@ -276,7 +281,7 @@ class KeyImagePresent(tk.Frame):
         
         self.original_image = Image.open(image_path)
         self.image = ImageTk.PhotoImage(self.original_image)
-        self.image_canv = tk.Canvas(self, bd=0, highlightthickness=0)
+        self.image_canv = ctk.CTkCanvas(self, bd=0, highlightthickness=0)
         self.image_canv.create_image(0, 0, image=self.image, anchor=tk.NW, tags='IMG')
         # self.image_canv.pack(side=tk.TOP, fill=tk.BOTH)
         self.image_canv.grid(row=1, sticky=tk.NSEW)
@@ -286,12 +291,12 @@ class KeyImagePresent(tk.Frame):
         # self.image_lbl.pack(side=tk.TOP, fill=tk.BOTH)
 
         self.path = extracted_path
-        self.path_lbl = tk.Label(self, text=self.path, justify=tk.CENTER)
+        self.path_lbl = ctk.CTkLabel(self, text=self.path, justify=tk.CENTER)
         # self.path_lbl.pack(side=tk.BOTTOM, fill=tk.BOTH)
         self.path_lbl.grid(row=2, sticky=tk.NSEW)
 
         self.image_path = image_path
-        self.image_path_lbl = tk.Label(self, text=self.image_path, justify=tk.CENTER)
+        self.image_path_lbl = ctk.CTkLabel(self, text=self.image_path, justify=tk.CENTER)
         # self.path_lbl.pack(side=tk.BOTTOM, fill=tk.BOTH)
         self.image_path_lbl.grid(row=0, sticky=tk.NSEW)
 
