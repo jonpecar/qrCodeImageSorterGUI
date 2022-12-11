@@ -13,7 +13,6 @@ from qrImageIndexer.qr_generator import load_lines
 from qrImageIndexer.write_pdf_fpf2 import FPDF
 from qrImageIndexer.generate_qr_wrapper import generate_qr_pdf
 
-from qrImageIndexerGUI.custom_scrolled_text import CustomScrolledText
 from qrImageIndexerGUI.image_grid import ImageGrid
 
 FRAME_PAD_PX = 10
@@ -135,7 +134,7 @@ class GenerateQRWindow(ctk.CTkToplevel):
         self.opt_frame = OptionsFrame(self.left_frame)
         self.opt_frame.pack(fill=tk.BOTH, side=tk.TOP)
 
-        self.enter_txt = CustomScrolledText(self.left_frame)
+        self.enter_txt = ctk.CTkTextbox(self.left_frame)
         self.enter_txt.insert("1.0", text=SAMPLE_TEXT)
         self.enter_txt.pack(fill=tk.BOTH, expand=True, side='bottom',
                             padx=FRAME_PAD_PX, pady=FRAME_PAD_PX)
