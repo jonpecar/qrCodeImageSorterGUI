@@ -2,8 +2,11 @@ import customtkinter as ctk
 
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from tkinter.scrolledtext import ScrolledText
 from typing import Dict
+
+from PIL import Image
+
+import io
 
 import fitz
 from qrImageIndexer.qr_generator import load_lines
@@ -11,6 +14,7 @@ from qrImageIndexer.write_pdf_fpf2 import FPDF
 from qrImageIndexer.generate_qr_wrapper import generate_qr_pdf
 
 from qrImageIndexerGUI.custom_scrolled_text import CustomScrolledText
+from qrImageIndexerGUI.image_grid import ImageGrid
 
 FRAME_PAD_PX = 10
 
@@ -21,20 +25,20 @@ Line 2
 Line 3
 \tLine 3 indented"""
 
-class PDFViewer(ScrolledText):
+class PDFViewer(ImageGrid):
+    def __init__(self, master, *args, **kwargs):
+        ImageGrid.__init__(self, master, 'FILL', *args, **kwargs)
+    
     def show(self, pdf_file, stream=None):
-        self.delete('1.0', tk.END) # clear current content
+        self.clear_grid()
         pdf = fitz.Document(pdf_file, stream=stream) # open the PDF file
-        self.images = []   # for storing the page images
-        for page in pdf:
-            pix = page.get_pixmap()
+        for i, page in enumerate(pdf):
+            pix = page.get_pixmap(dpi=300)
             pix1 = fitz.Pixmap(pix, 0) if pix.alpha else pix
-            photo = tk.PhotoImage(data=pix1.tobytes('ppm'))
+            photo = Image.open(io.BytesIO(pix1.tobytes('png')))
             # insert into the text box
-            self.image_create(tk.END, image=photo)
-            self.insert(tk.END, '\n')
-            # save the image to avoid garbage collected
-            self.images.append(photo)
+            self.add_plain_image(photo, i)
+        self.rebuild_grid()
 
 
 class OptionsFrame(ctk.CTkFrame):
@@ -131,12 +135,13 @@ class GenerateQRWindow(ctk.CTkToplevel):
         self.opt_frame = OptionsFrame(self.left_frame)
         self.opt_frame.pack(fill=tk.BOTH, side=tk.TOP)
 
-        self.enter_txt = ScrolledText(self.left_frame)
-        self.enter_txt.insert("1.0", chars=SAMPLE_TEXT)
+        self.enter_txt = CustomScrolledText(self.left_frame)
+        self.enter_txt.insert("1.0", text=SAMPLE_TEXT)
         self.enter_txt.pack(fill=tk.BOTH, expand=True, side='bottom',
                             padx=FRAME_PAD_PX, pady=FRAME_PAD_PX)
 
-        self.doc_viewer = PDFViewer(self.right_frame)
+        self.doc_viewer = PDFViewer(self.right_frame)#,
+            # bg=self.cget('fg_color')[1] if ctk.get_appearance_mode() == 'Dark' else self.cget('fg_color')[0])
         self.doc_viewer.pack(fill=tk.BOTH, expand=True, side=tk.TOP,
                             padx=FRAME_PAD_PX, pady=FRAME_PAD_PX)
 
