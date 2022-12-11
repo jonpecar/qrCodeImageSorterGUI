@@ -130,3 +130,5 @@ dmypy.json
 test.pdf
 .vscode/launch.json
 test.jpg
+
+.vscode/

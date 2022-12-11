@@ -64,7 +64,7 @@ class ScanImagesWindow(ctk.CTkToplevel):
                                         command=self.scan_button_clicked)
         self.save_sorted_images_button = ctk.CTkButton(self.button_frame, text='Save Sorted Images in Directory',
                                                 command=self.save_button_clicked)
-        self.progress = ctk.CTkProgressBar(self, orient=tk.HORIZONTAL, mode='determinate')
+        self.progress = ctk.CTkProgressBar(self, mode='determinate')
         self.progress.set(0)
 
         self.button_frame.pack(side=tk.TOP, fill=tk.X)
@@ -143,6 +143,7 @@ class ScanImagesWindow(ctk.CTkToplevel):
             self.progress.set(0)
             messagebox.showinfo('Copy Complete', 'Copying images to output directory is complete.')
 
+    @staticmethod
     def sort_results_dict(dict : Dict[str, str]) -> Dict[str, str]:
         sorted_keys = natsort.natsorted(dict.keys())
         return {key:dict[key] for key in sorted_keys}
@@ -180,8 +181,8 @@ class ImageGrid(ctk.CTkFrame):
         self.column_width = column_wdith
 
         self.vscrollbar = ctk.CTkScrollbar(self)
-        self.scrolled_canvas = ctk.CTkCanvas(self, bd=0, highlightthickness=0, 
-                                            bg=ThemeManager.single_color(self.fg_color, self.master.appearance_mode))
+        self.scrolled_canvas = ctk.CTkCanvas(self, bd=0, highlightthickness=0,
+                            bg=self.cget('fg_color')[1] if ctk.get_appearance_mode() == 'Dark' else self.cget('fg_color')[0])
         self.frame = ctk.CTkFrame(self.scrolled_canvas)
 
         self.vscrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -249,6 +250,7 @@ class ImageGrid(ctk.CTkFrame):
             for icol, item in enumerate(row):
                 item.grid(column=icol, row=irow, sticky=tk.NSEW)
 
+    @staticmethod
     def gridify_items(items : List, columns : int) -> List[List]:
         """
             Takes a single dimensional list and splits it into a list of
@@ -273,7 +275,6 @@ class KeyImagePresent(ctk.CTkFrame):
     
     def __init__(self, image_path : str, extracted_path : str, master, *args, **kwargs):
         ctk.CTkFrame.__init__(self, master, *args, **kwargs)
-        self.configure(highlightbackground='lightgrey', highlightthickness=1)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=1)
@@ -284,7 +285,7 @@ class KeyImagePresent(ctk.CTkFrame):
         self.image_canv = ctk.CTkCanvas(self, bd=0, highlightthickness=0)
         self.image_canv.create_image(0, 0, image=self.image, anchor=tk.NW, tags='IMG')
         # self.image_canv.pack(side=tk.TOP, fill=tk.BOTH)
-        self.image_canv.grid(row=1, sticky=tk.NSEW)
+        self.image_canv.grid(row=0, sticky=tk.NSEW)
 
         self.bind('<Configure>', self.resize)
         # self.image_lbl = tk.Label(self, image=self.image)
@@ -293,12 +294,12 @@ class KeyImagePresent(ctk.CTkFrame):
         self.path = extracted_path
         self.path_lbl = ctk.CTkLabel(self, text=self.path, justify=tk.CENTER)
         # self.path_lbl.pack(side=tk.BOTTOM, fill=tk.BOTH)
-        self.path_lbl.grid(row=2, sticky=tk.NSEW)
+        self.path_lbl.grid(row=1, sticky=tk.NSEW)
 
         self.image_path = image_path
         self.image_path_lbl = ctk.CTkLabel(self, text=self.image_path, justify=tk.CENTER)
         # self.path_lbl.pack(side=tk.BOTTOM, fill=tk.BOTH)
-        self.image_path_lbl.grid(row=0, sticky=tk.NSEW)
+        self.image_path_lbl.grid(row=2, sticky=tk.NSEW)
 
     def resize(self, event):
         size = (event.width, event.height)
