@@ -75,10 +75,3 @@ The available controls are listed below:
 It is intended that a feature will be added to allow users to manually add images as key images where they are not detected with a QR code. 
 This will allow users to images where the QR code may not have been detected or where it was forgotten. That is the primary purpose of the
 intermediate preview window but this feature is not implemented yet.
-
-## Note around build tests:
----
-
-There appears to be an issue with joining the threaded tests when running in GitHub actions on Python versions 3.7 & 3.10. 
-The tests will consistently fail on trying to rejoin the Thread. This is not reproduceable on a local machine. 
-As such build tests are only running on 3.8 & 3.9 until this is resolved.
