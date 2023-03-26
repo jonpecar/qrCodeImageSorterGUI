@@ -61,6 +61,8 @@ class ScanImagesWindow(ctk.CTkToplevel):
         self.image_grid = ImageGrid(self)
         self.scan_dir_button = ctk.CTkButton(self.button_frame, text='Scan Images From Directory (Will clear existing results)',
                                         command=self.scan_button_clicked)
+        self.quick_scan_button = ctk.CTkButton(self.button_frame, text="Quick Scan & Save",
+                                                command=self.quick_scan_button_clicked)
         self.save_sorted_images_button = ctk.CTkButton(self.button_frame, text='Save Sorted Images in Directory',
                                                 command=self.save_button_clicked)
         self.progress = ctk.CTkProgressBar(self, mode='determinate')
@@ -71,7 +73,8 @@ class ScanImagesWindow(ctk.CTkToplevel):
         self.scan_opts.pack(side=tk.TOP, fill=tk.BOTH)
         self.image_grid.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
         self.scan_dir_button.pack(side=tk.LEFT, fill=tk.X)
-        self.save_sorted_images_button.pack(side=tk.RIGHT, fill=tk.X)
+        self.quick_scan_button.pack(side=tk.RIGHT, fill=tk.X)
+        self.save_sorted_images_button.pack(side=tk.LEFT, fill=tk.X)
 
         self.in_directory = ''
         self.out_directory = ''
@@ -80,7 +83,17 @@ class ScanImagesWindow(ctk.CTkToplevel):
         self.scan_results = {}
 
     def scan_button_clicked(self):
-        directory = filedialog.askdirectory()
+        self._scan_docs(False)
+
+    def quick_scan_button_clicked(self):
+        self._scan_docs(True)
+
+    def _scan_docs(self, quick: bool = False):
+        directory = filedialog.askdirectory(title="Select source directory")
+
+        out_dir : str = None
+        if quick:
+            out_dir = filedialog.askdirectory(title="Select output directory")
 
         if os.path.isdir(directory):
             self.in_directory = directory
@@ -88,7 +101,7 @@ class ScanImagesWindow(ctk.CTkToplevel):
             files = [os.path.join(self.in_directory, x) for x in os.listdir(self.in_directory)]
             scan_thread = ImageScan(files, self.scan_opts.get_prefix())
             scan_thread.start()
-            self.monitor_progress_image_scan(scan_thread)
+            self.monitor_progress_image_scan(scan_thread, quick, out_dir)
 
     def save_button_clicked(self):
         if not os.path.isdir(self.in_directory) or not self.scan_results:
@@ -96,9 +109,13 @@ class ScanImagesWindow(ctk.CTkToplevel):
                                 'Please make sure that you have scanned an input directory with QR codes.')
             return
         directory = filedialog.askdirectory()
+        self._save_files(directory)
 
-        if os.path.isdir(directory):
-            self.out_directory = directory
+
+
+    def _save_files(self, out_dir: str):
+        if os.path.isdir(out_dir):
+            self.out_directory = out_dir
             save_thread = ImageCopy(self.scan_results, self.in_directory, self.out_directory)
             save_thread.start()
             self.monitor_progress_image_save(save_thread)
@@ -109,6 +126,7 @@ class ScanImagesWindow(ctk.CTkToplevel):
         """
         self.save_sorted_images_button['state'] = tk.DISABLED
         self.scan_dir_button['state'] = tk.DISABLED
+        self.quick_scan_button['state'] = tk.DISABLED
 
     def enable_buttons(self):
         """
@@ -117,19 +135,24 @@ class ScanImagesWindow(ctk.CTkToplevel):
         self.save_sorted_images_button['state'] = tk.NORMAL
         self.scan_dir_button['state'] = tk.NORMAL
 
-    def monitor_progress_image_scan(self, thread : ImageScan):
+    def monitor_progress_image_scan(self, thread : ImageScan,
+             quick : bool = False,
+             quick_out_dir: str = None):
         if thread.is_alive():
             self.disable_buttons()
             self.progress.set(float(thread.percent)/100)
-            self.after(100, lambda: self.monitor_progress_image_scan(thread))
+            self.after(100, lambda: self.monitor_progress_image_scan(thread, quick, quick_out_dir))
         else:
             self.enable_buttons()
             self.progress.set(0)
             self.scan_results = ScanImagesWindow.sort_results_dict(thread.results)
-            for file in self.scan_results:
-                self.image_grid.add_key_image(file, self.scan_results[file])
             self.non_image_files = thread.non_image_files[:]
-            self.image_grid.rebuild_grid()
+            if not quick:
+                for file in self.scan_results:
+                    self.image_grid.add_key_image(file, self.scan_results[file])
+                self.image_grid.rebuild_grid()
+            else:
+                self._save_files(quick_out_dir)
 
     def monitor_progress_image_save(self, thread : ImageCopy):
         if thread.is_alive():
