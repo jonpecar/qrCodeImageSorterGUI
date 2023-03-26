@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qrImageIndexerGUI"
-version = "0.3.0"
+version = "0.3.1"
 description = "GUI interface for tool for indexing images with QR codes"
 readme = "README.md"
 authors = [{name = "Jonathan Pecar", email = "jonathan.pecar@gmail.com"}]
@@ -21,7 +21,7 @@ dependencies = [
         "PyMuPDF",
         "pillow",
         "natsort",
-        "customtkinter"
+        "customtkinter>=5.0.3"
 ]
 requires-python = ">=3.7"
 [project.optional-dependencies]
@@ -30,7 +30,7 @@ dev = ["pytest", "bumpver", "setuptools", "pytest-mock"]
 [project.urls]
 Homepage = "https://github.com/jonpecar/qrCodeImageSorterGUI"
 [tool.bumpver]
-current_version = "0.3.0"
+current_version = "0.3.1"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 commit = true
