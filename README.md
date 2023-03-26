@@ -69,6 +69,17 @@ The available controls are listed below:
     
     6.3. Path detected in QR code.
 
+#### Not Shown: New Feature - Quick Sort
+
+There is now a quick sort button. This button will combine the scanning and saving process. You will be
+prompted for 2 directories, first the input and then the output. Images will be scanned then when
+scanning is complete they will be saved directly to the output directory without displaying the images
+in the window.
+
+This will improve performance where large numbers of images loading into the viewing window was
+reducing the processing speed.
+
+
 #### Note on future feature
 ---
 
