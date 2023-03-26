@@ -21,7 +21,7 @@ dependencies = [
         "PyMuPDF",
         "pillow",
         "natsort",
-        "customtkinter"
+        "customtkinter>=5.0.3"
 ]
 requires-python = ">=3.7"
 [project.optional-dependencies]
