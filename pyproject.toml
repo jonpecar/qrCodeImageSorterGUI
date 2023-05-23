@@ -17,7 +17,7 @@ classifiers = [
 ]
 keywords = ["sorter", "qrcode", "photosorter"]
 dependencies = [
-        "qrImageIndexer>=0.7.3",
+        "qrImageIndexer>=0.7.4",
         "PyMuPDF",
         "pillow",
         "natsort",
