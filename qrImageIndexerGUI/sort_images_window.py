@@ -42,14 +42,20 @@ class ImageScan(Thread):
                     self.results[image_path] = qr_string
 
 class ImageCopy(Thread):
-    def __init__(self, scan_results : Dict[str, str], in_directory : str, out_directory : str):
+    def __init__(self, scan_results : Dict[str, str], in_directory : str, out_directory : str, use_date : bool):
         Thread.__init__(self)
         self.scan_results = scan_results
         self.in_directory = in_directory
         self.out_directory = out_directory
+        self.use_date = use_date
 
     def run(self):
-        photo_sorter.sort_directory_exisitng_results(self.scan_results, self.in_directory, self.out_directory, False)
+        photo_sorter.sort_directory_exisitng_results(
+            self.scan_results, 
+            self.in_directory, 
+            self.out_directory, 
+            False, 
+            order_by_date=self.use_date)
 
 class ScanImagesWindow(ctk.CTkToplevel):
     def __init__(self, master, *args, **kwargs):
@@ -116,7 +122,10 @@ class ScanImagesWindow(ctk.CTkToplevel):
     def _save_files(self, out_dir: str):
         if os.path.isdir(out_dir):
             self.out_directory = out_dir
-            save_thread = ImageCopy(self.scan_results, self.in_directory, self.out_directory)
+            save_thread = ImageCopy(self.scan_results, 
+                                    self.in_directory, 
+                                    self.out_directory, 
+                                    self.scan_opts.use_dates())
             save_thread.start()
             self.monitor_progress_image_save(save_thread)
 
@@ -178,12 +187,18 @@ class ScanOptionsFrame(ctk.CTkFrame):
         self.has_prefix_chk = ctk.CTkCheckBox(self, text='QR codes have prefix',
                                             variable=self.has_prefix_chk_var, onvalue=True,
                                             offvalue=False)
+        self.use_dates_chk_var = tk.BooleanVar()
+        self.use_dates_chk = ctk.CTkCheckBox(self, text='Use modified date to order input images',
+                                    variable=self.use_dates_chk_var, onvalue=True,
+                                    offvalue=False)
         self.prefix_frame = ctk.CTkFrame(self)
         self.prefix_label = ctk.CTkLabel(self.prefix_frame, text="Prefix:")
         self.prefix_input = ctk.CTkEntry(self.prefix_frame)
         
         self.has_prefix_chk_var.set(True)
         self.has_prefix_chk.pack(side=tk.TOP, fill=tk.BOTH)
+        self.use_dates_chk_var.set(False)
+        self.use_dates_chk.pack(side=tk.TOP, fill=tk.BOTH)
         self.prefix_frame.pack(side=tk.TOP, fill=tk.BOTH)
         self.prefix_label.pack(side=tk.LEFT, fill=tk.BOTH)
         self.prefix_input.insert(0, r"{image}")
@@ -194,3 +209,6 @@ class ScanOptionsFrame(ctk.CTkFrame):
             return self.prefix_input.get()
         else:
             return ''
+        
+    def use_dates(self) -> bool:
+        return self.use_dates_chk_var.get()

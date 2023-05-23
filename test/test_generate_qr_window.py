@@ -2,6 +2,7 @@ import pytest
 import tkinter as tk
 import customtkinter as ctk
 from qrImageIndexerGUI import generate_qr_window
+import time
 
 # Testing the behaviour of the checkboxes. Probably not the best practice, but wanted to make sure that
 # they are representing the checked state of the appropriate checkboxes
@@ -13,6 +14,12 @@ def options_frame() -> generate_qr_window.OptionsFrame:
     yield frame
     app.destroy()
 
+@pytest.fixture
+def generate_qr_frame() -> generate_qr_window.GenerateQRWindow:
+    app = ctk.CTk()
+    frame = generate_qr_window.GenerateQRWindow(app)
+    yield frame
+    app.destroy()
 
 def test_sliceable_checkbox_check(options_frame : generate_qr_window.OptionsFrame):
     options_frame.sort_sliceable_chk.select()
@@ -50,6 +57,14 @@ def test_get_prefix_option(options_frame : generate_qr_window.OptionsFrame):
     options_frame.prefix_input.delete(0, tk.END)
     options_frame.prefix_input.insert(0, 'prefix')
     assert options_frame.get_prefix() == 'prefix'
+
+def test_check_text_for_invalid_chars_pass_for_valid_chars(generate_qr_frame : generate_qr_window.GenerateQRWindow):
+    generate_qr_frame.enter_txt.insert("1.0", 'These are \nAll valid characters\n7892719312\t-_78473#')
+    assert generate_qr_frame.has_invalid_path_chars() == False
+    
+def test_check_text_for_invalid_chars_fail_for_invalid_chars(generate_qr_frame : generate_qr_window.GenerateQRWindow):
+    generate_qr_frame.enter_txt.insert("1.0", 'Here are some\nInvalid *\nPath chars <')
+    assert generate_qr_frame.has_invalid_path_chars() == True
 
 @pytest.fixture
 def mocked_qr_generate_functions(mocker):
