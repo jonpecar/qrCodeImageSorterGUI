@@ -196,7 +196,7 @@ def test_sort_dict_function():
     
     assert expect_keys == list(sort_images_window.ScanImagesWindow.sort_results_dict(input).keys())
 
-def test_sort_dict_function_unergdered():
+def test_sort_dict_function_unordered():
     input = {
         'a':123,
         'c':789,
