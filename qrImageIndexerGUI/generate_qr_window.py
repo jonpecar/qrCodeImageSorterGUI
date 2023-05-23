@@ -147,6 +147,16 @@ class GenerateQRWindow(ctk.CTkToplevel):
         self.update_pdf_sample() #Update the PDF here so that it will contain the sample text and use all the default settings
 
     def save_pdf(self):
+        if self.has_invalid_path_chars():
+            proceed = messagebox.askyesno('Found Invalid File Characters', 
+                                             "One or more of the following characters were found in your text:"
+                                              + " '<', '>', ':', '\"', '|', '\\', '/', '?', '*'. "
+                                              + "These are not valid characters for file paths in Windows." 
+                                              + " If you proceed these will be removed when sorting the images"
+                                              + " except for '\\' and '/' which will create new folders." 
+                                              + "\n\nDo you wish to proceed?")
+            if not proceed: return
+        
         file = filedialog.asksaveasfile(mode='wb', confirmoverwrite=True, defaultextension='.pdf',
                                         filetypes=[['PDF Files', '*.pdf']])
         pdf = self.generate_pdf()
@@ -167,3 +177,9 @@ class GenerateQRWindow(ctk.CTkToplevel):
             prefix = self.opt_frame.get_prefix()
         return generate_qr_pdf(data, check_states['qr_headings'], check_states['repeat_headings'],
                                 check_states['sliceable'], prefix)
+    
+    def has_invalid_path_chars(self) -> bool:
+        invalid_chars_windows = ['<', '>', ':', '"', '|', '\\', '/', '?', '*']
+        text = self.enter_txt.get("1.0", tk.END)
+        has_invalid_chars = [char in text for char in invalid_chars_windows]
+        return True in has_invalid_chars
