@@ -29,7 +29,7 @@ class PlainImagePresent(ctk.CTkFrame):
         image_ar = self.original_image.size[1] / self.original_image.size[0]
         adjusted_size = (width, int(width * image_ar))
         resized = self.original_image.copy()
-        resized.thumbnail(adjusted_size,Image.ANTIALIAS)
+        resized.thumbnail(adjusted_size,Image.LANCZOS)
         background = Image.new('RGBA', adjusted_size, (255, 255, 255, 0))
         background.paste(
             resized, (int((adjusted_size[0] - resized.size[0]) / 2), int((adjusted_size[1] - resized.size[1]) / 2))
@@ -77,7 +77,7 @@ class KeyImagePresent(ctk.CTkFrame):
         image_ar = self.original_image.size[1] / self.original_image.size[0]
         adjusted_size = (width, int(width * image_ar))
         resized = self.original_image.copy()
-        resized.thumbnail(adjusted_size,Image.ANTIALIAS)
+        resized.thumbnail(adjusted_size,Image.LANCZOS)
         background = Image.new('RGBA', adjusted_size, (255, 255, 255, 0))
         background.paste(
             resized, (int((adjusted_size[0] - resized.size[0]) / 2), int((adjusted_size[1] - resized.size[1]) / 2))
