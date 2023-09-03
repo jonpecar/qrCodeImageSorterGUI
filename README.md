@@ -12,6 +12,22 @@ To install the tool, run the below command with any version of Python above 3.7:
 
 ```pip install qrImageIndexerGUI```
 
+This package relies on the ZBar library. See the below instructions for different packages:
+
+On **Windows**:  
+
+If you see an ugly ImportError related with `lizbar-64.dll`, install the [vcredist_x64.exe](https://www.microsoft.com/en-gb/download/details.aspx?id=40784) from the _Visual C++ Redistributable Packages for Visual Studio 2013_
+
+On **Linux**:  
+```bash
+sudo apt-get install libzbar0
+```
+
+On **Mac OS X**: 
+```bash
+brew install zbar
+```
+
 ## Instructions
 ---
 
